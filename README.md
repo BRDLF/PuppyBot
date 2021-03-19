@@ -1,4 +1,4 @@
-# puppyeyes
+# PuppyBot
 
 This is supposed to be some arduino code for a little LED display and some servo motors to make eyes and ears respectively
 
