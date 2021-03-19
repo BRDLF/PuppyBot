@@ -6,10 +6,9 @@
 #define kMM 256         //total LEDs
 #define BUTTON_PIN 10
 
+struct animation anim_idle;
 
-
-int (*ptr)[50][2];
-//a pointer for eyeball reference
+int (*current_frame)[50][2];
 
 CRGB leds[kMM];
 
@@ -51,63 +50,64 @@ void ClearScreen(){
   }
 }
 
-unsigned long CompareTime(unsigned long base, int compare){
-  return base - compare*10;
+uint32_t CompareTime(uint32_t base, uint16_t compare){
+  return base - compare;
 }
 
 //end fucntions
 
-int test = CompareTime(10000, 100);
-
+  uint16_t test = CompareTime(10000, 1000);
 
 
 void setup() { 
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, kMM);                     //Setup LEDS
-  Serial.begin(9600);                                                 //Set Serial Write for troubleshooting  
-  pinMode(BUTTON_PIN, INPUT); digitalWrite(BUTTON_PIN, HIGH);         //Test Button PIN Setup
-  ptr = &Face_stare;                                                  //Set initial state of eyes pointer
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, kMM); //Setup LEDS, creates an LED matrix size kMM on DATA_PIN
+  Serial.begin(9600); //Set Serial Write for troubleshooting  
+  pinMode(BUTTON_PIN, INPUT_PULLUP);   //Test Button PIN Setup
+    
+
+
   
-  Serial.println("test");
-  Serial.println(test);
-
- idle.delays[0] = 2000; 
- idle.delays[1] = 100; 
- idle.delays[2] = 100; 
- idle.delays[3] = 100; 
- idle.delays[4] = 1200; 
- idle.delays[5] = 100; 
- idle.delays[6] = 100; 
- idle.delays[7] = 100; 
- idle.delays[8] = 0;
-
-
+/*Filling the animation structs need to go in order of either current-delays-frames or in delays-current-frames
+Basically, declaring anything after .frames causes the addressing to skew dramatically.
+TBD if this occurs once multiple animations are created
+*/
+ anim_idle.current   = 0;
+ anim_idle.delays[0] = 2000; 
+ anim_idle.delays[1] = 100; 
+ anim_idle.delays[2] = 100; 
+ anim_idle.delays[3] = 100; 
+ anim_idle.delays[4] = 1200; 
+ anim_idle.delays[5] = 100; 
+ anim_idle.delays[6] = 100; 
+ anim_idle.delays[7] = 100; 
+ anim_idle.delays[8] = 0; 
+ anim_idle.frames[0] = &Face_stare; 
+ anim_idle.frames[1] = &Face_blink1; 
+ anim_idle.frames[2] = &Face_blink2; 
+ anim_idle.frames[3] = &Face_blink1; 
+ anim_idle.frames[4] = &Face_stare; 
+ anim_idle.frames[5] = &Face_blink1; 
+ anim_idle.frames[6] = &Face_blink2; 
+ anim_idle.frames[7] = &Face_blink1; 
+ anim_idle.frames[8] = &Face_stare; 
 }
 
 void loop() {
- idle.frames[0] = &Face_stare; 
- idle.frames[1] = &Face_blink1; 
- idle.frames[2] = &Face_blink2; 
- idle.frames[3] = &Face_blink1; 
- idle.frames[4] = &Face_stare; 
- idle.frames[5] = &Face_blink1; 
- idle.frames[6] = &Face_blink2; 
- idle.frames[7] = &Face_blink1; 
- idle.frames[8] = &Face_stare;                                            //if these go in setup the addresses are all wrong. but when they're here, there's extraneous work for the cpu and there's too much delay
 /*  */
-if(digitalRead(BUTTON_PIN)){
- // ptr = anim[0][0];
-  ptr = idle.frames[0];
+if(digitalRead(BUTTON_PIN)== LOW){
+  //when the button is pushed
+  current_frame = anim_idle.frames[2];
+  //to be replaced with "change to animation mode
 }
-else{                                                                     //when button pushed
-  ptr = &Face_shy;
-  delay(5);
+else{
+  //display idle frame (to be replaced with "void animate idle"
+  current_frame = anim_idle.frames[0];
 } 
 // Then we write the screen
   ClearScreen();
-  FrameMap(*ptr);
+  FrameMap(*current_frame);
   FrameMap(Face_freckles);
 //Then we show the screen
     FastLED.show();
-    Serial.println(test);
-  delay(100); //delay, but I want to replace this with millis() timers
+  delay(100); // 1/10 sec delay, but I want to replace this with millis() timers
 }
