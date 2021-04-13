@@ -160,7 +160,7 @@ switch ( eyes_state )
       current_delay = ProgressAnim( blushhold_anim, blushhold_animdelay, anim_frame);
       lastactive_timer = millis();  
        
-    if (current_button == 0) {eyes_state = BLUSHEND;}
+    if (current_button == LOW) {eyes_state = BLUSHEND;}
     }
    break;
   case BLUSHSTART:
@@ -169,8 +169,8 @@ switch ( eyes_state )
       lastactive_timer = millis();     
     }
     if (current_delay==0){
-      if (current_button == 1)  {eyes_state = BLUSHHOLD; Serial.println(F("going to hold"));}
-      if (current_button== 0) {eyes_state = BLUSHEND; Serial.println(F("going to end"));}
+      if (current_button == HIGH)  {eyes_state = BLUSHHOLD; Serial.println(F("going to hold"));}
+      if (current_button== LOW) {eyes_state = BLUSHEND; Serial.println(F("going to end"));}
     }
     break;
 }
@@ -178,7 +178,7 @@ switch ( eyes_state )
 
 
 
-if(current_button == 1 && blushbutton_waspushed == false){
+if(current_button == HIGH && blushbutton_waspushed == false){
 // Pushed
   eyes_state = BLUSHSTART;
   blushbutton_waspushed = true;
