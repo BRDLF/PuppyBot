@@ -49,6 +49,7 @@
                 "__BUILTIN_AVR_SLEEP=1",
                 "__BUILTIN_AVR_COUNTLSULLK=1",
                 "__cpp_aggregate_nsdmi=201304",
+                "__BUILTIN_AVR_COUNTLSULLR=1",
                 "__UFRACT_MAX__=0XFFFFP-16UR",
                 "__UINT_LEAST8_TYPE__=unsigned char",
                 "__DQ_FBIT__=63",
@@ -534,8 +535,7 @@
                 "__cpp_init_captures=201304",
                 "__ATOMIC_ACQ_REL=4",
                 "__ATOMIC_RELEASE=3",
-                "__BUILTIN_AVR_FMUL=1",
-                "USBCON"
+                "__BUILTIN_AVR_FMUL=1"
             ]
         }
     ]
