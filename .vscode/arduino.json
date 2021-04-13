@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:leonardo",
+    "port": "COM13",
+    "programmer": "arduino:avrisp",
+    "sketch": "PuppyEyes_fastLED\\PuppyEyes_fastLED.ino"
+}

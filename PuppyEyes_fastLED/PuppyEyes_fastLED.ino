@@ -16,7 +16,7 @@
 
 enum global_state {STARE, BLINK, BLUSHEND, BLUSHHOLD, BLUSHSTART, SMILE}eyes_state;
 
-uint8_t (*current_frame)[51][2] = NULL;
+uint16_t (*current_frame)[51][2] = NULL;
 
 uint32_t current_delay = 0;
 uint32_t current_timer;
@@ -30,19 +30,25 @@ CRGB leds[kMM];
 // functions
 
 uint16_t ProgressAnim ( byte animaddress[], uint16_t animdelay[], byte &frameref){
-//  Serial.println(F("Starting animation progress"));
-//  Serial.print(F("anim address "));
-//  Serial.print(F(frameref));
-//  Serial.print(F(" is "));
-//  Serial.println(F(animaddress[frameref]));
-//  Serial.print(F("animdelay "));
-//  Serial.print(F(frameref));
-//  Serial.print(F(" is "));
-//  Serial.println(F(animdelay[frameref]));
+  // uint16_t testint = arrayface[animaddress[frameref]];
   current_frame = arrayface[animaddress[frameref]];
-//  Serial.print(F("Set frameref ")); 
-//  Serial.println(F(frameref));
-//  Serial.println(F(blink_anim[0]));
+//  Serial.println("Starting animation progress");
+//  Serial.print("anim address ");
+//  Serial.print(frameref);
+//  Serial.print(" is ");
+//  Serial.println(animaddress[frameref]);
+//  Serial.print("animdelay ");
+//  Serial.print(frameref);
+//  Serial.print(" is ");
+//  Serial.println(animdelay[frameref]);
+//  Serial.print("testint ");
+//  Serial.println(testint);
+//  Serial.print("var ");
+//  Serial.println(arrayface[testint][0][0][0]);
+//  Serial.print("hard code ");
+//  Serial.println(arrayface[1][0][0][0]);
+//  Serial.print("Set frameref "); 
+//  Serial.println(frameref);
   uint16_t to_return = animdelay[frameref];
   if (to_return == 0) {
     frameref = 0;
@@ -75,11 +81,18 @@ else{
 }
 }
 
-void FrameMap(byte Frame[][2])
+void FrameMap(uint16_t Frame[][51][2])
 {
-  for(int x = 0; Frame[x][0] != 255; x++){
-
-    int p = XY(Frame[x][0], Frame[x][1]);
+  for(int x = 0; pgm_read_word(&Frame[0][x][0]) != 255 /*x<51*/; x++){
+//    Serial.print(x);
+//    Serial.println();
+    uint16_t framex = pgm_read_word(&Frame[0][x][0]);
+//    Serial.print("framex is ");
+//    Serial.println(framex);
+    uint16_t framey = pgm_read_word(&Frame[0][x][1]);
+//    Serial.print("framey is ");
+//    Serial.println(framey);
+    uint16_t p = XY(framex, framey);
 //    leds[p].setHSV(255, 102, 32);
     leds[p].setHSV(138, 212, 16);
   }
@@ -101,7 +114,7 @@ uint32_t CompareTime(uint32_t current, uint32_t previous){
 void setup() { 
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, kMM); //Setup LEDS, creates an LED matrix size kMM on DATA_PIN
   Serial.begin(9600); //Set Serial Write for troubleshooting  
-  pinMode(BUTTON_PIN, INPUT_PULLUP);   //Test Button PIN Setup
+  pinMode(BUTTON_PIN, INPUT);   //Test Button PIN Setup
   if(digitalRead(BUTTON_PIN)== LOW) { blushbutton_waspushed = false;}
   lastactive_timer = millis();
 }
@@ -109,6 +122,7 @@ void setup() {
 void loop() {
 /*  */
 current_timer = millis();
+bool current_button = digitalRead(BUTTON_PIN);
 
 switch ( eyes_state ) 
 {
@@ -116,6 +130,7 @@ switch ( eyes_state )
     current_frame = arrayface[0];
     if (CompareTime(current_timer, lastactive_timer) >= blink_delay){
       eyes_state = BLINK;
+      Serial.println("blinking");
     }  
     break;
   case BLINK:
@@ -145,7 +160,7 @@ switch ( eyes_state )
       current_delay = ProgressAnim( blushhold_anim, blushhold_animdelay, anim_frame);
       lastactive_timer = millis();  
        
-    if (digitalRead(BUTTON_PIN)== HIGH) {eyes_state = BLUSHEND;}
+    if (current_button == 0) {eyes_state = BLUSHEND;}
     }
    break;
   case BLUSHSTART:
@@ -154,8 +169,8 @@ switch ( eyes_state )
       lastactive_timer = millis();     
     }
     if (current_delay==0){
-      if (digitalRead(BUTTON_PIN)== LOW)  {eyes_state = BLUSHHOLD; Serial.println(F("going to hold"));}
-      if (digitalRead(BUTTON_PIN)== HIGH) {eyes_state = BLUSHEND; Serial.println(F("going to end"));}
+      if (current_button == 1)  {eyes_state = BLUSHHOLD; Serial.println(F("going to hold"));}
+      if (current_button== 0) {eyes_state = BLUSHEND; Serial.println(F("going to end"));}
     }
     break;
 }
@@ -163,17 +178,20 @@ switch ( eyes_state )
 
 
 
-
-if(digitalRead(BUTTON_PIN)== LOW && blushbutton_waspushed == false){
+if(current_button == 1 && blushbutton_waspushed == false){
 // Pushed
   eyes_state = BLUSHSTART;
   blushbutton_waspushed = true;
   Serial.println(F("starting to blush"));
+
 }
+
+Serial.println(current_button);
 
 // Screen Clear/Write
   ClearScreen();
-  FrameMap(*current_frame);
+  FrameMap(current_frame);
 // Show
     FastLED.show();
+//    delay(1000);
 }
