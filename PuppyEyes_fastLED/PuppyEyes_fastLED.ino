@@ -130,7 +130,7 @@ switch ( eyes_state )
     current_frame = arrayface[0];
     if (CompareTime(current_timer, lastactive_timer) >= blink_delay){
       eyes_state = BLINK;
-      Serial.println("blinking");
+      Serial.println("eyes_state: BLINK");
     }  
     break;
   case BLINK:
@@ -140,6 +140,7 @@ switch ( eyes_state )
     }
     if (current_delay==0){
       eyes_state = STARE;
+      Serial.println("eyes_state: STARE");
       blink_delay = random(2300, 5000);
       Serial.print("next blink in ");
       Serial.println(blink_delay);
@@ -151,6 +152,7 @@ switch ( eyes_state )
       lastactive_timer = millis();       
     if (current_delay==0){
       eyes_state = STARE;
+      Serial.println("eyes_state: STARE");
       blushbutton_waspushed = false;
     }
     }
@@ -160,7 +162,7 @@ switch ( eyes_state )
       current_delay = ProgressAnim( blushhold_anim, blushhold_animdelay, anim_frame);
       lastactive_timer = millis();  
        
-    if (current_button == LOW) {eyes_state = BLUSHEND;}
+    if (current_button == LOW) {eyes_state = BLUSHEND; Serial.println(F("eyes_state: BLUSHEND"));} 
     }
    break;
   case BLUSHSTART:
@@ -169,8 +171,8 @@ switch ( eyes_state )
       lastactive_timer = millis();     
     }
     if (current_delay==0){
-      if (current_button == HIGH)  {eyes_state = BLUSHHOLD; Serial.println(F("going to hold"));}
-      if (current_button== LOW) {eyes_state = BLUSHEND; Serial.println(F("going to end"));}
+      if (current_button == HIGH)  {eyes_state = BLUSHHOLD; Serial.println(F("eyes_state: BLUSHHOLD"));}
+      if (current_button== LOW) {eyes_state = BLUSHEND; Serial.println(F("eyes_state: BLUSHEND"));}
     }
     break;
 }
@@ -178,15 +180,14 @@ switch ( eyes_state )
 
 
 
-if(current_button == HIGH && blushbutton_waspushed == false){
+if(current_delay == 0 && current_button == HIGH && blushbutton_waspushed == false){
 // Pushed
   eyes_state = BLUSHSTART;
+  Serial.println("eyes_state: BLUSHSTART");
   blushbutton_waspushed = true;
-  Serial.println(F("starting to blush"));
-
 }
 
-Serial.println(current_button);
+// Serial.println(current_button);
 
 // Screen Clear/Write
   ClearScreen();
