@@ -52,11 +52,26 @@ void FrameMap(const uint16_t Frame[][51][2]){
   }
 }
 
+void FrameMap(const uint32_t Frame[][8]){
+  uint16_t i;
+  for(uint8_t x = 0; x < 8; x++){
+    for(uint8_t y = 0; y < 32; y++){
+      uint32_t p = pgm_read_word(&Frame[0][x]);
+      i = XY(x, 31 - y);  //bitread reads from the rightmost bit. 31-1 to read leftmost bit instead.
+      if(bitRead(p, y)){
+        leds[i].setHSV(138, 212, 16);
+      }
+    }
+  }
+}
+
 void ClearScreen(){
   for (int x = 0; x < kMM; x++){
     leds[x].setHSV(0,0,0);
   }
 }
+
+
 
 void SetupEyes(){
   FastLED.addLeds<NEOPIXEL, visorPin>(leds, kMM); //Setup LEDS, creates an LED matrix size kMM on DATA_PIN

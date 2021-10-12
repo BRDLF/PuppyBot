@@ -3,7 +3,7 @@
 
 #include <FastLED.h>
 
-#define visorPin 9     //pin for Visor
+#define visorPin 9      //pin for Visor
 #define kMH 8           //height
 #define kMW 32          //width
 #define kMM 256         //total LEDs
@@ -18,6 +18,7 @@ uint32_t delay_blink = 2100;
 
 bool is_going_to_move_eyes;
 
-const uint16_t (*current_frame)[51][2] = NULL;
+//const uint16_t (*current_frame)[51][2] = NULL;
+const uint32_t (*current_frame)[8] = NULL;
 
 #endif
