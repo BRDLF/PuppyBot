@@ -111,7 +111,7 @@ void EyesSwitch(){
     if (delay_eyes==0){
       state_eyes = STARE;
       Serial.println("eyes_state: STARE");
-      wasPushed_nose = false;
+      was_pushed_nose = false;
     }
     }
     break;
@@ -140,11 +140,11 @@ void EyesSwitch(){
 
 void CycleEndEyes(){
   Serial.println("CycleEndEyes");
-  if(delay_eyes == 0 && buttons_cycle == HIGH && wasPushed_nose == false){
+  if(delay_eyes == 0 && buttons_cycle == HIGH && was_pushed_nose == false){
 // Pushed
   state_eyes = BLUSHSTART;
   Serial.println("eyes_state: BLUSHSTART");
-  wasPushed_nose = true;
+  was_pushed_nose = true;
   }
   if(is_going_to_move_eyes){
   ClearScreen();

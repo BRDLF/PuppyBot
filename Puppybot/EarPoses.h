@@ -30,11 +30,3 @@ uint16_t ear_frame = 0;
 
 
 #endif
-
-/* Old Poses go here to die
- * static const uint16_t PROGMEM earTwitchUp[3]
-                              ={0, 90, 105};
-
-static const uint16_t PROGMEM earTwitchDown[3]
-                              ={0, 90, 65};
-*/
